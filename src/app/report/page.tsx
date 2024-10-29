@@ -9,8 +9,6 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 interface AnalysisResult {
-  analysisId: string;
-  timestamp: string;
   foodItem: {
     name: string;
     confidence: number;
@@ -42,56 +40,25 @@ interface AnalysisResult {
 
 export default function ReportPage() {
   const searchParams = useSearchParams();
-  const analysisId = searchParams.get('id');
   const status = searchParams.get('status');
-  const [loading, setLoading] = useState(status === 'analyzing' || !!analysisId);
+  const encodedData = searchParams.get('data');
+  const [loading, setLoading] = useState(status === 'analyzing');
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    async function fetchAnalysis() {
+    if (encodedData) {
       try {
-        if (!analysisId && status === 'analyzing') {
-          // Poll every 2 seconds while analyzing
-          intervalId = setInterval(async () => {
-            // Check if analysis is complete
-            const response = await fetch('/api/analysis-status');
-            const { latestAnalysisId } = await response.json();
-            if (latestAnalysisId) {
-              clearInterval(intervalId);
-              window.location.href = `/report?id=${latestAnalysisId}`;
-            }
-          }, 2000);
-          return;
-        }
-
-        if (!analysisId) {
-          setError('No analysis ID provided');
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch(`/api/analysis/${analysisId}`);
-        if (!response.ok) throw new Error('Failed to fetch analysis');
-        
-        const data = await response.json();
-        setAnalysis(data);
+        const decodedData = JSON.parse(decodeURIComponent(encodedData));
+        setAnalysis(decodedData);
         setLoading(false);
-      } catch (err) {
-        setError('Failed to load analysis results');
-        console.error('Analysis fetch error:', err);
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+        setError(`Failed to parse analysis data: ${errorMessage}`);
         setLoading(false);
       }
     }
-
-    fetchAnalysis();
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [analysisId, status]);
+  }, [encodedData]);
 
   if (loading) {
     return (

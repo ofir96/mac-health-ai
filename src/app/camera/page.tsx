@@ -12,7 +12,6 @@ export default function CameraPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [, setImageData] = useState<string | null>(null);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
@@ -57,9 +56,8 @@ export default function CameraPage() {
       
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       const capturedImage = canvas.toDataURL('image/jpeg', 0.8);
-      setImageData(capturedImage);
 
-      // Redirect to report page immediately
+      // Show loading state
       router.push('/report?status=analyzing');
 
       // Send image to backend
@@ -75,8 +73,8 @@ export default function CameraPage() {
 
       const result = await response.json();
       
-      // Update URL with analysis ID
-      router.push(`/report?id=${result.analysisId}`);
+      // Navigate to report page with the analysis data
+      router.push(`/report?data=${encodeURIComponent(JSON.stringify(result))}`);
     } catch (err) {
       setError('Failed to process image. Please try again.');
       console.error('Image processing error:', err);
