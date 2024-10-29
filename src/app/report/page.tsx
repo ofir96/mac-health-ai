@@ -202,7 +202,7 @@ export default function ReportPage() {
                 </div>
                 <div className="relative">
                   <Progress 
-                    value={((analysis?.dailyGoals.calories.current || 0) / analysis?.dailyGoals.calories.target) * 100} 
+                    value={((analysis?.dailyGoals.calories.current || 0) / (analysis?.dailyGoals.calories.target || 1)) * 100} 
                     className="h-3 rounded-full bg-blue-100" 
                   />
                 </div>
@@ -216,7 +216,7 @@ export default function ReportPage() {
                 </div>
                 <div className="relative">
                   <Progress 
-                    value={((analysis?.dailyGoals.protein.current || 0) / analysis?.dailyGoals.protein.target) * 100} 
+                    value={((analysis?.dailyGoals.protein.current || 0) / (analysis?.dailyGoals.protein.target || 1)) * 100} 
                     className="h-3 rounded-full bg-green-100" 
                   />
                 </div>
@@ -271,29 +271,3 @@ export default function ReportPage() {
   );
 }
 
-function processAnalysisData(data: any): AnalysisResult {
-  // Process the raw analysis text to extract metrics and recommendations
-  // This is a placeholder implementation - you'll need to adapt this based on your AI model's output format
-  const analysis = data.analysis || '';
-  
-  // Example parsing logic - adjust based on your AI model's output format
-  const metrics = {
-    storage: 65,
-    memory: 88,
-    battery: 95,
-    overall: 92,
-  };
-
-  const recommendations = [
-    'Consider clearing some storage space',
-    'Battery is in excellent condition',
-    'Memory usage is optimal',
-  ];
-
-  return {
-    ...data,
-    metrics,
-    recommendations,
-    timestamp: new Date().toISOString(),
-  };
-} 

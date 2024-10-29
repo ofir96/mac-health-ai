@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Camera, Image as ImageIcon } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from 'next/link';
@@ -12,7 +12,7 @@ export default function CameraPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [imageData, setImageData] = useState<string | null>(null);
+  const [, setImageData] = useState<string | null>(null);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
